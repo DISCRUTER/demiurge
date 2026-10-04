@@ -56,6 +56,26 @@ int main() {
   // Socket option
   int opt_val = 1;
 
+  // Response
+  char *char_buffer = "<html><body><h1>Hello World</h1></body></html>";
+  int buffer_len = strlen(char_buffer);
+
+  char *response = malloc(buffer_len + 256);
+  if (response == NULL) {
+      perror("malloc");
+      exit(EXIT_FAILURE);
+  }
+  int response_len = sprintf(response,
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/html; charset=utf-8\r\n"
+      "Content-Length: %d\r\n"
+      "Content-Disposition: inline\r\n"
+      "Connection: close\r\n"
+      "\r\n"
+      "%s",
+      buffer_len, char_buffer
+);
+
 
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_INET;
@@ -103,7 +123,7 @@ int main() {
       perror("listen");
       exit(EXIT_FAILURE);
   } else {
-      printf("Server listening on %s...\n", PORT);
+      printf("Server listening on \e]8;;http://0.0.0.0:%s\e\\http://0.0.0.0:%s\e]8;;\e\\ \n", PORT, PORT);
   }
 
   // Setting up SIGCHLD handler
@@ -133,7 +153,7 @@ int main() {
 
       if (!fork()) {     // inside the child proc
           close(sockfd); // child proc does not need the listener
-          if (send(new_fd, "Hello World", 13, 0) == -1) {
+          if (send(new_fd, response, response_len, 0) == -1) {
               perror("send");
           }
           close(new_fd);
@@ -142,5 +162,6 @@ int main() {
       close(new_fd);  // Parent doesn't need this
   }
 
+  free(response);
   exit(EXIT_SUCCESS);
 }
