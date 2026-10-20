@@ -1,12 +1,11 @@
 # demiurge
-A server made in c from scratch.
+A multi-threaded event driven server in C.
 
-## Specs
-The current state of the server is child per connection architecture.
-The next progression is a child worker + epoll architecture like nginx.
+## Vision
+To build a multi-threaded event driven server in C using the resilient **Reactor Pattern**. 
+To be more precise it will be a *Multi-Reactor(Worker per Epoll)*. One listener thread accepts connectionsand round-robins them to worker threads, each running its own event loop.
 
-The end goal is a multithreaded + epoll server.
-
+## Wanna try it?
 Here's your magic spell to get it working wizard!!
 ```bash
 gcc -o build/demiurge src/main.c
